@@ -27,7 +27,7 @@ def exists(program):
 
 
 def create_video(input_dir, n_zeros, output_fname,
-                 output_dir=None, image_type='jpg', fps=30,
+                 output_dir=None, image_type='png', fps=30,
                  overwrite=True, verbose=False):
     file_pattern = '%0{}d.{}'.format(n_zeros, image_type)
     input_pattern = path.join(input_dir, file_pattern)
@@ -61,13 +61,14 @@ def create_video(input_dir, n_zeros, output_fname,
     return subprocess.call(cmd)
 
 
-def search_for_images(output_dir, dirname, fnames, image_type='jpg'):
+def search_for_images(output_dir, dirname, fnames, image_type='png'):
     images = [s for s in fnames if s.endswith('.' + image_type)]
     if len(images) != 0:
         root, containing = path.split(dirname)
         image_names = [path.splitext(i)[0] for i in images]
-        image_numbers = set(int(x) for x in image_names)
-        expected = set(range(len(images)))
+        list_im =sorted([ int(x) for x in image_names])
+	image_numbers = set(list_im)
+	expected = set(range(list_im[0], len(images) + list_im[0]))    
         if image_numbers == expected:
             n_zeros = len(image_names[0])
             print ('{} has contiguous {} files'
@@ -75,6 +76,8 @@ def search_for_images(output_dir, dirname, fnames, image_type='jpg'):
                 dirname, image_type, len(images) - 1, n_zeros)
             create_video(dirname, n_zeros, containing,
                          output_dir=output_dir, image_type=image_type)
+	else:
+	    print 'Did not find the expected arithmetic sequence of images. Potentially missing some images from the sequence'
 
 
 def imgtovid(input_dir, output_dir=None):
@@ -99,6 +102,10 @@ if __name__ == "__main__":
         structure - e.g.
 
             dir/foo/bar/001.jpg  -> output/foo_bar.mp4
+
+	Should be called like this: 
+		python imgtovid.py /dir/my_images -o /dir_output/ 
+	if the images are in the folder my_images. 
 
         Note that this does lead to degenerate cases if you use underscore
         folder names. Currently only supports jpg images but trivial to add
