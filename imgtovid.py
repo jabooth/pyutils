@@ -61,7 +61,24 @@ def create_video(input_dir, n_zeros, output_fname,
     return subprocess.call(cmd)
 
 
-def search_for_images(output_dir, dirname, fnames, image_type='png'):
+extensions = {'png', 'jpg', 'gif'}
+def find_image_type(dirname, fname):
+    try: 
+    	image_type = fname[-3:] # Assumption that the first element is an image.
+    except IOError:
+	print 'Probably the first element in the folder is not an image, which is required'
+	raise
+    else:
+	import imghdr
+	type1 = imghdr.what(dirname + '/' + fname)
+	if any(type1==ext for ext in extensions):
+	     return type1
+	else:
+	     raise Exception('Not supported type (extension) of image')
+
+
+def search_for_images(output_dir, dirname, fnames):
+    image_type = find_image_type(dirname, fnames[0])
     images = [s for s in fnames if s.endswith('.' + image_type)]
     if len(images) != 0:
         root, containing = path.split(dirname)
