@@ -84,7 +84,7 @@ def search_for_images(output_dir, dirname, fnames):
     if len(images) != 0:
         root, containing = path.split(dirname)
         image_names = [path.splitext(i)[0] for i in images]
-        list_im =sorted([ int(x) for x in image_names])
+        list_im = sorted([int(x) for x in image_names])
 	image_numbers = set(list_im)
 	expected = set(range(list_im[0], len(images) + list_im[0]))    
         if image_numbers == expected:
